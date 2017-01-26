@@ -71,7 +71,7 @@ class LoginViewController: UIViewController {
             do {
                 let range = Range(uncheckedBounds: (5, responseData.count - 5))
                 
-                let newData = responseData.subdata(in: range) /* subset response data! */
+                let newData = responseData.subdata(in: range)
                 
                 print(NSString(data: newData, encoding: String.Encoding.utf8.rawValue)!)
                 
