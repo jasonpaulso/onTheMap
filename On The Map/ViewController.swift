@@ -26,32 +26,40 @@ class LoginViewController: UIViewController {
     
     @IBAction func submitUserCredentials(_ sender: Any) {
 
-        logInUser()
+        logInUser(userName: usernameField.text!, password: passwordField.text!)
         
     }
 
     
-    func logInUser() {
+    func logInUser(userName: String, password: String) {
         
         let httpBody = ["udacity" :
             [
-                "username" : usernameField.text! as String,
-                "password" : passwordField.text! as String
+                "username" : userName,
+                "password" : password
             ]
         ]
         
         let session = URLSession.shared
+        
         let request = NSMutableURLRequest(url: URL(string: "https://www.udacity.com/api/session")!)
+        
         request.httpMethod = "POST"
+        
         request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
         request.httpBody = try? JSONSerialization.data(withJSONObject: httpBody)
         
         let task = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
        
             guard error == nil else {
+                
                 print("error POSTing GET to api/session")
+                
                 print(error!.localizedDescription)
+                
                 return
             }
 
@@ -61,11 +69,18 @@ class LoginViewController: UIViewController {
             }
    
             do {
-                let range = Range(uncheckedBounds: (5, data!.count - 5))
+                let range = Range(uncheckedBounds: (5, responseData.count - 5))
                 
-                guard let sessionData = try JSONSerialization.jsonObject(with: (responseData.subdata(in: range)), options: .allowFragments) as Any? else {
+                let newData = responseData.subdata(in: range) /* subset response data! */
+                
+                print(NSString(data: newData, encoding: String.Encoding.utf8.rawValue)!)
+                
+                guard let sessionData = try JSONSerialization.jsonObject(with: newData, options: .allowFragments) as AnyObject? else {
+                    
                         print("1: error trying to convert data to JSON")
+                    
                         return
+                    
                 }
 
                 print(sessionData)
