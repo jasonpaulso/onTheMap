@@ -27,77 +27,76 @@ class LoginViewController: UIViewController {
     @IBAction func submitUserCredentials(_ sender: Any) {
 
         logInUser(userName: usernameField.text!, password: passwordField.text!)
-        
+
     }
 
     
     func logInUser(userName: String, password: String) {
         
-        let httpBody = ["udacity" :
-            [
-                "username" : userName,
-                "password" : password
-            ]
+        let headers = [
+            "accept": "application/json",
+            "content-type": "application/json"
         ]
+        
+        let parameters = ["udacity": [
+            "username": userName,
+            "password": password
+            ]]
+        
+        let request = NSMutableURLRequest(url: NSURL(string: "https://www.udacity.com/api/session")! as URL)
+        request.httpMethod = "POST"
+        request.allHTTPHeaderFields = headers
+        request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        
         
         let session = URLSession.shared
         
-        let request = NSMutableURLRequest(url: URL(string: "https://www.udacity.com/api/session")!)
-        
-        request.httpMethod = "POST"
-        
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        request.httpBody = try? JSONSerialization.data(withJSONObject: httpBody)
-        
-        let task = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-       
-            guard error == nil else {
+        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+            
+            if error != nil {
                 
-                print("error POSTing to api/session")
+                print(error!)
                 
-                print(error!.localizedDescription)
+            } else {
                 
-                return
+                let httpResponse = response as? HTTPURLResponse
+                
+                print(httpResponse!)
             }
-
-            guard let responseData = data else {
+            
+            guard data != nil else {
+                
                 print("Error: did not receive data")
+                
                 return
             }
-   
+            
             do {
-                let range = Range(uncheckedBounds: (5, responseData.count - 5))
-                
-                let newData = responseData.subdata(in: range)
-                
-                print(NSString(data: newData, encoding: String.Encoding.utf8.rawValue)!)
-                
-                guard let sessionData = try JSONSerialization.jsonObject(with: newData, options: .allowFragments) as AnyObject? else {
-                    
-                        print("1: error trying to convert data to JSON")
-                    
-                        return
-                    
-                }
+                var sessionData:AnyObject?
 
-                print(sessionData)
-                
+                let range = Range(uncheckedBounds: (5, (data?.count)! - 5))
+
+                let newData = data?.subdata(in: range)
+
+                print(NSString(data: newData!, encoding: String.Encoding.utf8.rawValue)!)
+
+                sessionData = try JSONSerialization.jsonObject(with: newData!, options: .allowFragments) as AnyObject
+
+                print(sessionData!)
+
                 return
-                
+
             } catch  {
                 
                 print("2: error trying to convert data to JSON", error.localizedDescription)
                 
                 return
             }
+            
         })
         
-        task.resume()
+        dataTask.resume()
     }
-    
 
     
 
