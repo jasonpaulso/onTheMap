@@ -41,7 +41,8 @@ class LoginViewController: UIViewController {
         let parameters = ["udacity": [
             "username": userName,
             "password": password
-            ]]
+            ]
+        ]
         
         let request = NSMutableURLRequest(url: NSURL(string: "https://www.udacity.com/api/session")! as URL)
         request.httpMethod = "POST"
