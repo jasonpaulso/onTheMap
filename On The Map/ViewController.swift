@@ -56,7 +56,7 @@ class LoginViewController: UIViewController {
        
             guard error == nil else {
                 
-                print("error POSTing GET to api/session")
+                print("error POSTing to api/session")
                 
                 print(error!.localizedDescription)
                 
