@@ -89,7 +89,7 @@ class LoginViewController: UIViewController {
 
             } catch  {
                 
-                print("2: error trying to convert data to JSON", error.localizedDescription)
+                print("Error: trying to convert data to JSON", error.localizedDescription)
                 
                 return
             }
