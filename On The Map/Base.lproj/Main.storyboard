@@ -65,6 +65,7 @@
                     </view>
                     <connections>
                         <outlet property="passwordField" destination="9Ul-fv-SZh" id="oul-In-PRi"/>
+                        <outlet property="submitButton" destination="jlb-KN-d0e" id="jWy-YT-cSb"/>
                         <outlet property="usernameField" destination="yV8-42-jAZ" id="3B9-o3-xLg"/>
                     </connections>
                 </viewController>
@@ -75,7 +76,7 @@
         <!--Item-->
         <scene sceneID="wal-Kn-1hA">
             <objects>
-                <viewController storyboardIdentifier="testDismissedView" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Mz2-2n-HxH" customClass="ViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="testDismissedView" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Mz2-2n-HxH" customClass="MapViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="dSt-6s-FRM"/>
                         <viewControllerLayoutGuide type="bottom" id="PgZ-c5-2sd"/>
@@ -87,6 +88,14 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="jEX-ky-TnM">
                                 <rect key="frame" x="19" y="174" width="375" height="388"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gnG-nS-2gL">
+                                <rect key="frame" x="178" y="578" width="59" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Find Me!"/>
+                                <connections>
+                                    <action selector="findMeButton:" destination="Mz2-2n-HxH" eventType="touchUpInside" id="fgL-1r-QNH"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -98,6 +107,9 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Item" id="Tqv-fW-kRi"/>
                     <navigationItem key="navigationItem" id="qgb-Wj-mPj"/>
+                    <connections>
+                        <outlet property="mapView" destination="jEX-ky-TnM" id="wMI-K7-Zb4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BWI-XV-jhZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -106,13 +118,13 @@
         <!--Root View Controller-->
         <scene sceneID="Szv-er-kOC">
             <objects>
-                <tableViewController id="WPS-i9-t2T" sceneMemberID="viewController">
+                <tableViewController id="WPS-i9-t2T" customClass="StudentTableTableViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ysk-dX-sJk">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="pdW-nk-3Lq">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="studentDetailCell" id="pdW-nk-3Lq">
                                 <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pdW-nk-3Lq" id="7ni-Y9-HII">
@@ -205,6 +217,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="wxq-wA-i0T">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
@@ -229,6 +242,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="fs0-x2-F1e">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
