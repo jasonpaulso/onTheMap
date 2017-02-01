@@ -9,6 +9,7 @@ import UIKit
 import Foundation
 import SystemConfiguration
 
+
 // Mark: Conectivity Check
 
 func isInternetAvailable() -> Bool
@@ -88,3 +89,5 @@ extension ShowsAlert where Self: UIViewController {
         }
     }
 }
+
+
