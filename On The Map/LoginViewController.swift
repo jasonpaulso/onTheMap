@@ -42,18 +42,72 @@ class LoginViewController: UIViewController, UITextFieldDelegate, ShowsAlert {
             
             print("valid email address")
             
-            logInUser(userName: usernameField.text!, password: passwordField.text!)
+            let _ = OTMNetworkingClient.sharedInstance().taskForLogin(usernameField.text!, password: passwordField.text!, completionHandlerForLogin: { (response, error) in
+                
+                if error == nil {
+                    
+                    performUIUpdatesOnMain {
+                        
+                        guard (response?["error"] as? String) == nil else {
+                            
+                            performUIUpdatesOnMain {
+                                
+                                self.showAlert(title: "Alert", message: (response?["error"] as! String), buttonText: "Dismiss")
+                                
+                            }
+                            
+                            return
+                        }
+                        
+                        
+                        guard let sessionData = response?["session"] as? [String: AnyObject] else {
+                            
+                            print("Error: could not parse data")
+                            
+                            print(response!)
+                            
+                            return
+                        }
+                        
+                        guard sessionData["id"] as? String != nil else {
+                            
+                            self.showAlert(title: "Alert", message: "There was a problem logging you in. Please try again.", buttonText: "OK")
+                            
+                            return
+                        }
+                        
+                        let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TabBarController")
+                        
+                        self.present(viewController, animated: false, completion: nil)
+                        
+                    }
+                    
+                } else {
+                    
+                    performUIUpdatesOnMain {
+                        
+                        self.showAlert(title: "Alert", message: "There was a problem logging you in. Please try again.", buttonText: "OK")
+                        
+                        print(error as Any)
+                        
+                    }
+                    
+                }
+                
+                
+            
+            })
             
         } else if !isUserEmailValid {
             
             print("invalid email address")
             
-            self.showAlertAsync(title: "Alert", message: "Email address is not valid", buttonText: "OK")
+            self.showAlert(title: "Alert", message: "Email address is not valid", buttonText: "OK")
 
         } else if !isUserPasswordValid {
             
             print("invalid password")
-            self.showAlertAsync(title: "Alert", message: "Please enter a password", buttonText: "OK")
+            self.showAlert(title: "Alert", message: "Please enter a password", buttonText: "OK")
             
         }
         

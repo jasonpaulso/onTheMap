@@ -85,35 +85,39 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="jEX-ky-TnM">
-                                <rect key="frame" x="19" y="174" width="375" height="388"/>
-                            </mapView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gnG-nS-2gL">
-                                <rect key="frame" x="178" y="578" width="59" height="30"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="jEX-ky-TnM">
+                                <rect key="frame" x="0.0" y="56" width="414" height="631"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Find Me!"/>
-                                <connections>
-                                    <action selector="findMeButton:" destination="Mz2-2n-HxH" eventType="touchUpInside" id="fgL-1r-QNH"/>
-                                </connections>
-                            </button>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="jEX-ky-TnM" firstAttribute="centerY" secondItem="rD2-WE-Bzb" secondAttribute="centerY" id="9sb-33-U1l"/>
-                            <constraint firstItem="jEX-ky-TnM" firstAttribute="top" secondItem="dSt-6s-FRM" secondAttribute="bottom" constant="110" id="KeO-mb-NzL"/>
-                            <constraint firstItem="jEX-ky-TnM" firstAttribute="centerX" secondItem="rD2-WE-Bzb" secondAttribute="centerX" id="Swc-67-oIV"/>
-                            <constraint firstItem="jEX-ky-TnM" firstAttribute="trailing" secondItem="rD2-WE-Bzb" secondAttribute="trailingMargin" id="n59-JY-fHt"/>
-                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Item" id="Tqv-fW-kRi"/>
-                    <navigationItem key="navigationItem" id="qgb-Wj-mPj"/>
+                    <navigationItem key="navigationItem" id="qgb-Wj-mPj">
+                        <nil key="title"/>
+                        <barButtonItem key="leftBarButtonItem" title="Find Me!" id="BjG-nc-2W3">
+                            <connections>
+                                <action selector="findMeButton:" destination="Mz2-2n-HxH" id="eW4-8F-loc"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" id="18y-c7-RBe">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="GKt-rd-Y04">
+                                <rect key="frame" x="333" y="7" width="61" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Post Me!"/>
+                                <connections>
+                                    <action selector="postMe:" destination="Mz2-2n-HxH" eventType="touchUpInside" id="pBW-2d-Zts"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="jEX-ky-TnM" id="wMI-K7-Zb4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BWI-XV-jhZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2855.072463768116" y="-25.271739130434785"/>
+            <point key="canvasLocation" x="2853.6231884057975" y="-25.271739130434785"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="Szv-er-kOC">
@@ -220,15 +224,15 @@
             </objects>
             <point key="canvasLocation" x="1280" y="-25"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="x8f-5u-sD8">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="pXa-eD-IHa" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="pXa-eD-IHa" customClass="TabBarViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="7f0-p4-6a5">
                         <barButtonItem key="leftBarButtonItem" title="Log Out" id="DWg-Wx-uXg">
                             <connections>
-                                <segue destination="BYZ-38-t0r" kind="presentation" id="j4W-1p-lNK"/>
+                                <action selector="logOutUserMapViewButtonClicked:" destination="pXa-eD-IHa" id="qIO-FO-PId"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -239,21 +243,23 @@
                     </tabBar>
                     <connections>
                         <segue destination="Mz2-2n-HxH" kind="relationship" relationship="viewControllers" id="SU3-aW-qIB"/>
+                        <segue destination="BYZ-38-t0r" kind="presentation" identifier="logOutSegue" id="puk-fV-nT6"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="laO-bd-oNJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1947.826086956522" y="-25.271739130434785"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="76g-Gc-h6W">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="UfR-Pn-Hp2" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="UfR-Pn-Hp2" customClass="TabBarViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="ZkF-jL-c7b">
                         <barButtonItem key="leftBarButtonItem" title="Log Out" id="uZX-kI-56O">
                             <connections>
-                                <segue destination="BYZ-38-t0r" kind="presentation" id="nyF-c5-h5y"/>
+                                <action selector="logOutUserTableViewButtonClicked:" destination="UfR-Pn-Hp2" id="zhF-52-Usy"/>
+                                <segue destination="BYZ-38-t0r" kind="presentation" identifier="logOutSegue" id="kRI-aj-F8h"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -272,6 +278,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="j4W-1p-lNK"/>
+        <segue reference="kRI-aj-F8h"/>
     </inferredMetricsTieBreakers>
 </document>

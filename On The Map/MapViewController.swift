@@ -23,7 +23,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         
         super.viewDidLoad()
         mapView.delegate = self
-        print("connected: \(isInternetAvailable())")
         getStudentLocationsFromUdacity()
         
         locationManager.delegate = self
@@ -37,15 +36,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         locationManager.startUpdatingLocation()
         
     }
-    
-  
+
     @IBAction func findMeButton(_ sender: Any) {
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.follow, animated: true)
     }
 
+    @IBAction func postMe(_ sender: Any) {
+        postNewStudentToUdacity()
+
+    }
     
-    func addStudentsToMap(arrayOfStudents: [Students.studentDetails]) {
+    func addStudentsToMap(arrayOfStudents: [StudentDetails]) {
         
         for student in arrayOfStudents {
             
@@ -54,8 +56,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             if student.latitude != nil && student.longitude != nil {
                 
                 let coordinates = [student.latitude as? Double, student.longitude as? Double]
-                let firstName = student.lastName!
-                let lastName = student.firstName!
+                let lastName = student.lastName!
+                let firstName = student.firstName!
                 let subTitle = student.url!
                 let title = "\(firstName) \(lastName)"
                 

@@ -11,7 +11,7 @@ import MapKit
 
 class Students : NSObject {
     
-    var arrayOfStudents = [studentDetails]()
+    var arrayOfStudents = [StudentDetails]()
     
     class func sharedInstance() -> Students {
         struct Singleton {
@@ -20,37 +20,35 @@ class Students : NSObject {
         return Singleton.sharedInstance
     }
     
-    
-    
-    struct studentDetails {
-        
-        let firstName: String?
-        let lastName: String?
-        let latitude: Any?
-        let longitude: Any?
-        let mapTitle: String?
-        let url: String?
-        let key: Any?
-    
-        
-        init(dictionary: [String:AnyObject]) {
-            
-            firstName = dictionary["firstName"] as? String
-            lastName = dictionary["lastName"] as? String
-            latitude = dictionary["latitude"]
-            longitude = dictionary["longitude"]
-            mapTitle = dictionary["mapString"] as? String
-            url = dictionary["mediaURL"] as? String
-            key = dictionary["uniqueKey"]
-            
-            Students.sharedInstance().arrayOfStudents.append(self)
-            
-        }
+}
 
-
+struct StudentDetails {
+    
+    let firstName: String?
+    let lastName: String?
+    let latitude: Any?
+    let longitude: Any?
+    let mapTitle: String?
+    let url: String?
+    let key: Any?
+    
+    
+    init(dictionary: [String:AnyObject]) {
+        
+        firstName = dictionary["firstName"] as? String
+        lastName = dictionary["lastName"] as? String
+        latitude = dictionary["latitude"]
+        longitude = dictionary["longitude"]
+        mapTitle = dictionary["mapString"] as? String
+        url = dictionary["mediaURL"] as? String
+        key = dictionary["uniqueKey"]
+        
+        Students.sharedInstance().arrayOfStudents.append(self)
+        
     }
     
 }
+
 
 class StudentAnnotation: NSObject, MKAnnotation {
     

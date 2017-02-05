@@ -8,7 +8,7 @@
 
 import UIKit
 
-class StudentTableTableViewController: UITableViewController {
+class StudentTableTableViewController: UITableViewController, ShowsAlert {
     
 
     override func viewDidLoad() {
@@ -37,11 +37,9 @@ class StudentTableTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-
-        
         let student = Students.sharedInstance().arrayOfStudents[(indexPath as NSIndexPath).row]
-        let firstName = student.lastName!
-        let lastName = student.firstName!
+        let firstName = student.firstName!
+        let lastName = student.lastName!
         let subTitle = student.url!
         let title = "\(firstName) \(lastName)"
         
@@ -56,10 +54,21 @@ class StudentTableTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         let student = Students.sharedInstance().arrayOfStudents[(indexPath as NSIndexPath).row]
         
-        let url = ((student.url)!) as String
-        UIApplication.shared.open(URL(string: url)!)
+        let url = (string: student.url)
+        
+        if verifyUrl(urlString: url) {
+            
+            UIApplication.shared.open(URL(string: url!)! as URL)
+            
+        } else {
+            
+            self.showAlert(message: "Could not open link.")
+            
+        }
+        
     }
 
 
