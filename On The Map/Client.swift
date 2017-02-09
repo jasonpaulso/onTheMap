@@ -155,6 +155,12 @@ class OTMNetworkingClient: NSObject {
         
         print("logging out")
         
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        appDelegate.showSelectedStudentOnMap = false
+        appDelegate.selectedStudentCoordinates = (nil,nil)
+        
+        
         if isInternetAvailable() {
             
             dataTask.resume()

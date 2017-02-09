@@ -78,6 +78,21 @@ class StudentTableTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        let student = collectionOfStudents[(indexPath as NSIndexPath).row]
+        
+        let url = student.url!
+        
+        if formatAndValidateUrl(urlString: url).0 == true {
+            
+            UIApplication.shared.open(URL(string: url)! as URL)
+            
+        } else {
+            
+            self.showAlert(message: "Could not open link.")
+            
+        }
+
+        
     }
 
     var appDelegate: AppDelegate!
@@ -92,7 +107,6 @@ class StudentTableTableViewController: UITableViewController {
         print("tab bar selected?", Students.sharedInstance().showCurrentStudentOnMap)
         
         tabBarController?.selectedIndex = 0
-        
         
     }
 
