@@ -35,9 +35,9 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
         
         if CLLocationManager.authorizationStatus() == .denied {
 
-            userWebsiteTextField.isHidden = true
-            searchByCurrentLocationButton.isHidden = true
-            orLabel.isHidden = true
+            userWebsiteTextField.isUserInteractionEnabled = false
+            searchByCurrentLocationButton.isUserInteractionEnabled = false
+            
         }
         
         

@@ -14,6 +14,7 @@ import SystemConfiguration
 class MapViewController: UIViewController {
     
     
+    @IBOutlet var findMeButton: UIBarButtonItem!
     
     var locationManager = CLLocationManager()
     var students = Students.sharedInstance()
@@ -45,8 +46,16 @@ class MapViewController: UIViewController {
             
         }
         
-        
-        
+        if CLLocationManager.authorizationStatus() == .denied {
+            
+            findMeButton.isEnabled = false
+            
+        } else {
+            
+            findMeButton.isEnabled = true
+            
+        }
+
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
@@ -70,12 +79,39 @@ class MapViewController: UIViewController {
     }
     
 
+    @IBAction func findMeButtonClicked(_ sender: Any) {
+        
+        var locationAvailable: Bool?
+        
+        if locationManager.location != nil{
+            
+            locationAvailable = true
+            
+        } else {
+            
+            locationAvailable = false
+            
+        }
+        
+        if locationAvailable! {
+            
+            mapView.showsUserLocation = true
+            
+            mapView.setUserTrackingMode(.follow, animated: true)
+            
+        } else {
+            
+            showAlert(message: "Sorry, we can't find you right now. Please try again later.")
+            
+        }
+        
+
+    }
+    
+    
 
     @IBAction func findMeButton(_ sender: Any) {
         
-        mapView.showsUserLocation = true
-        
-        mapView.setUserTrackingMode(.follow, animated: true)
         
     }
     
