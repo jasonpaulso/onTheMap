@@ -418,7 +418,7 @@ class OTMNetworkingClient: NSObject {
     private func convertDataWithCompletionHandler(_ data: Data, completionHandlerForConvertData: (_ result: AnyObject?, _ error: NSError?) -> Void) {
         
         var sessionData: AnyObject! = nil
-        
+                
         do { let parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
   
             sessionData = parsedResult
