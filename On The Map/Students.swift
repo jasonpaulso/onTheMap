@@ -39,13 +39,13 @@ struct StudentDetails {
     
     init(dictionary: [String:AnyObject]) {
         
-        self.firstName = dictionary["firstName"] as? String
-        self.lastName = dictionary["lastName"] as? String
+        self.firstName = dictionary["firstName"] as? String ?? "Unknown"
+        self.lastName = dictionary["lastName"] as? String  ?? "Unknown"
         self.latitude = dictionary["latitude"]
         self.longitude = dictionary["longitude"]
-        self.mapTitle = dictionary["mapString"] as? String
-        self.url = dictionary["mediaURL"] as? String
-        self.key = dictionary["uniqueKey"]
+        self.mapTitle = dictionary["mapString"] as? String  ?? "Unknown"
+        self.url = dictionary["mediaURL"] as? String  ?? "Unknown"
+        self.key = dictionary["uniqueKey"] 
         
         Students.sharedInstance().arrayOfStudents.append(self)
         

@@ -146,6 +146,7 @@ class MapViewController: UIViewController {
             print(student)
             
             if student.latitude != nil && student.longitude != nil {
+
                 
                 let coordinates = [student.latitude as? Double, student.longitude as? Double]
                 let lastName = student.lastName!

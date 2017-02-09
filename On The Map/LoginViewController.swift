@@ -185,12 +185,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        
-//        checkField(sender: AnyObject.self as AnyObject)
-//        
-//    }
-    
     private func checkField(sender: AnyObject) {
         
         if (usernameField.text?.isEmpty)! || (passwordField.text?.isEmpty)! {
