@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 import SystemConfiguration
-
+import MapKit
 
 // Mark: Connectivity Check
 
@@ -46,98 +46,42 @@ func isInternetAvailable() -> Bool {
     
 }
 
-// Mark: Credential Validation
+// Mark : Geocoding
 
-func isValidUserEmail(usernameString: String) -> Bool {
+struct Typealiases {
+    typealias JSONDict = [String:Any]
+}
+
+class GetLocation {
     
-    var returnValue = true
+    let locManager = CLLocationManager()
+    var currentLocation: CLLocation!
     
-    let emailRegEx = "[A-Z0-9a-z.-_]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,3}"
-    
-    do {
-        let regex = try NSRegularExpression(pattern: emailRegEx)
+    func getAdress(completion: @escaping (Typealiases.JSONDict) -> ()) {
         
-        let nsString = usernameString as NSString
-        
-        let results = regex.matches(in: usernameString, range: NSRange(location: 0, length: nsString.length))
-        
-        if results.count == 0 {
+        locManager.requestWhenInUseAuthorization()
+        if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse ||
+            CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways){
+            currentLocation = locManager.location
             
-            returnValue = false
-            
-        }
-        
-    } catch let error as NSError {
-        
-        print("invalid regex: \(error.localizedDescription)")
-        
-        returnValue = false
-        
-    }
-    
-    return  returnValue
-    
-}
-
-func isValidUserPassword(userPassword: String) -> Bool {
-    
-    var returnValue = true
-    
-    let whitespace = NSCharacterSet.whitespaces
-    
-    if ((userPassword.trimmingCharacters(in: whitespace)) == "") {
-        
-        returnValue = false
-        
-    }
-    
-    return returnValue
-}
-
-// Mark: Alert Handling
-
-protocol ShowsAlert {}
-
-extension ShowsAlert where Self: UIViewController {
-    
-    func showAlert(title: String = "Error", message: String, buttonText: String? = "OK") {
-        
-            let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-                    let OKAction = UIAlertAction(title: buttonText, style: .default) { (action:UIAlertAction!) in
-                        // OK button tapped
-                    }
-            alertController.addAction(OKAction)
-        
-            self.present(alertController, animated: true, completion: nil)
-        
-    }
-    
-}
-
-
-
-func performUIUpdatesOnMain(_ updates: @escaping () -> Void) {
-
-    DispatchQueue.main.async {
-        
-        updates()
-        
-    }
-
-}
-
-func verifyUrl (urlString: String?) -> Bool {
-    //Check for nil
-    if let urlString = urlString {
-        // create NSURL instance
-        if let url = NSURL(string: urlString) {
-            // check if your application can open the NSURL instance
-            return UIApplication.shared.canOpenURL(url as URL)
+            let geoCoder = CLGeocoder()
+            geoCoder.reverseGeocodeLocation(currentLocation) { (placemarks, error) -> Void in
+                
+                if error != nil {
+                    print("Error getting location: \(String(describing: error))")
+                } else {
+                    let placeArray = placemarks as [CLPlacemark]!
+                    var placeMark: CLPlacemark!
+                    placeMark = placeArray?[0]
+                    completion(placeMark.addressDictionary as! Typealiases.JSONDict)
+                }
+            }
         }
     }
-    return false
 }
+
+
+
 
 
 

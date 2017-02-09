@@ -8,21 +8,18 @@
 
 import UIKit
 
-class StudentTableTableViewController: UITableViewController, ShowsAlert {
+class StudentTableTableViewController: UITableViewController {
+    
+    var collectionOfStudents = [StudentDetails]()
     
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
+        collectionOfStudents = Students.sharedInstance().arrayOfStudents
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
-
-
-    // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -30,24 +27,50 @@ class StudentTableTableViewController: UITableViewController, ShowsAlert {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return Students.sharedInstance().arrayOfStudents.count
+        return collectionOfStudents.count
         
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let student = Students.sharedInstance().arrayOfStudents[(indexPath as NSIndexPath).row]
+        let student = collectionOfStudents[(indexPath as NSIndexPath).row]
         let firstName = student.firstName!
         let lastName = student.lastName!
-        let subTitle = student.url!
         let title = "\(firstName) \(lastName)"
         
-        let cellReuseId = "studentDetailCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseId) as UITableViewCell!
+        let cellReuseId = "CustomStudentTableCell"
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseId) as! CustomStudentTableCell!
         
-        cell?.textLabel?.text = title
-        cell?.detailTextLabel?.text = subTitle
+        cell?.nameLabel.text = title
+        
+        cell?.arrowTapped = { (selectedCell) -> Void in
+            
+            let url = student.url!
+            
+            if formatAndValidateUrl(urlString: url).0 == true {
+                
+                UIApplication.shared.open(URL(string: url)! as URL)
+                
+            } else {
+                
+                self.showAlert(message: "Could not open link.")
+
+            }
+
+        }
+        
+        cell?.pinTapped = { (selectedCell) -> Void in
+            
+            self.appDelegate = UIApplication.shared.delegate as! AppDelegate
+            
+            self.appDelegate.selectedStudent = [student]
+            
+            self.appDelegate.showSelectedStudentOnMap = true
+            
+            self.tabBarController?.selectedIndex = 0
+        }
+
         
         return cell!
         
@@ -55,37 +78,107 @@ class StudentTableTableViewController: UITableViewController, ShowsAlert {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let student = Students.sharedInstance().arrayOfStudents[(indexPath as NSIndexPath).row]
+    }
+
+    var appDelegate: AppDelegate!
+    
+    func loadMapView(longitude: Double? = nil, latitude: Double? = nil, websiteString: String?, mapString: String?, findLocation: Bool? = false) {
         
-        let url = (string: student.url)
+        appDelegate = UIApplication.shared.delegate as! AppDelegate
         
-        if verifyUrl(urlString: url) {
+        appDelegate.selectedStudentCoordinates = (latitude!, longitude!)
+        appDelegate.showSelectedStudentOnMap = true
+
+        print("tab bar selected?", Students.sharedInstance().showCurrentStudentOnMap)
+        
+        tabBarController?.selectedIndex = 0
+        
+        
+    }
+
+
+    @IBAction func logoutUserButtonClicked(_ sender: Any) {
+        logOutUser()
+    }
+    
+    private func logOutUser() {
+        
+        if isInternetAvailable() {
             
-            UIApplication.shared.open(URL(string: url!)! as URL)
+            OTMNetworkingClient.sharedInstance().taskForLogout({response, error in
+                
+                if error != nil {
+                    
+                    print(error!)
+                    
+                    return
+                }
+                
+            })
+            
+           self.dismiss(animated: true, completion: nil)
+
             
         } else {
             
-            self.showAlert(message: "Could not open link.")
+            self.showAlert(message: "Could not log you out. Please try again later.")
             
         }
+    }
+    
+    func loadStudentDetails() {
+        
+        OTMNetworkingClient.sharedInstance().loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
+            
+            if result == nil {
+                
+                self.view.reloadInputViews()
+
+                
+            } else {
+                
+                self.showAlert(message: result!)
+
+            }
+            
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            
+            LoadingOverlay.shared.hideOverlayView()
+            
+            return
+            
+        })
+        
+    }
+    
+    
+    @IBAction func refreshButtonClicked(_ sender: Any) {
+        
+            loadStudentDetails()
         
     }
 
+}
 
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+class CustomStudentTableCell: UITableViewCell {
+    
+    var arrowTapped: ((CustomStudentTableCell) -> Void)?
+    var pinTapped: ((CustomStudentTableCell) -> Void)?
+    
+    @IBOutlet var pinButtonOutlett: UIButton!
 
+    @IBOutlet var nameLabel: UILabel!
+    
+    @IBOutlet var arrowButtonOutlet: UIButton!
+    
+    @IBAction func arrowButtonAction(_ sender: Any) {
+        
+        arrowTapped?(self)
     }
-    */
 
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
+    @IBAction func pinButtonAction(_ sender: Any) {
+        
+        pinTapped?(self)
     }
-    */
-
-
+    
 }

@@ -7,15 +7,24 @@
 //
 
 import UIKit
+import IQKeyboardManagerSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    
+    var selectedStudentCoordinates: (Double?, Double?)
+    
+    var showSelectedStudentOnMap = false
+    
+    var selectedStudent = [StudentDetails]()
+    
+    
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        IQKeyboardManager.sharedManager().enable = true
         return true
     }
 
@@ -43,4 +52,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
+
+
+
+
+//@UIApplicationMain
+//class AppDelegate: UIResponder, UIApplicationDelegate {
+//    
+//    var window: UIWindow?
+//    
+//    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+//        
+//        IQKeyboardManager.sharedManager().enable = true
+//        
+//        return true
+//    }
+//}
 

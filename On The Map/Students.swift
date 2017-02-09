@@ -11,7 +11,12 @@ import MapKit
 
 class Students : NSObject {
     
+    var currentUserStudentKey: String?
+    var currentUserStudent: StudentDetails?
     var arrayOfStudents = [StudentDetails]()
+    
+    var showCurrentStudentOnMap = false
+    var selectedStudentCoordinates: (Double, Double)?
     
     class func sharedInstance() -> Students {
         struct Singleton {
@@ -19,7 +24,6 @@ class Students : NSObject {
         }
         return Singleton.sharedInstance
     }
-    
 }
 
 struct StudentDetails {
@@ -35,13 +39,13 @@ struct StudentDetails {
     
     init(dictionary: [String:AnyObject]) {
         
-        firstName = dictionary["firstName"] as? String
-        lastName = dictionary["lastName"] as? String
-        latitude = dictionary["latitude"]
-        longitude = dictionary["longitude"]
-        mapTitle = dictionary["mapString"] as? String
-        url = dictionary["mediaURL"] as? String
-        key = dictionary["uniqueKey"]
+        self.firstName = dictionary["firstName"] as? String
+        self.lastName = dictionary["lastName"] as? String
+        self.latitude = dictionary["latitude"]
+        self.longitude = dictionary["longitude"]
+        self.mapTitle = dictionary["mapString"] as? String
+        self.url = dictionary["mediaURL"] as? String
+        self.key = dictionary["uniqueKey"]
         
         Students.sharedInstance().arrayOfStudents.append(self)
         
@@ -53,11 +57,6 @@ struct StudentDetails {
 class StudentAnnotation: NSObject, MKAnnotation {
     
     var coordinate: CLLocationCoordinate2D
-    
-//    var firstName: String!
-//    var lastname: String!
-//    
-//    var url: String!
     var title: String?
     var subtitle: String?
     

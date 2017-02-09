@@ -11,10 +11,11 @@ import MapKit
 import CoreLocation
 import SystemConfiguration
 
-class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, ShowsAlert {
+class MapViewController: UIViewController {
+    
+    
     
     var locationManager = CLLocationManager()
-    
     var students = Students.sharedInstance()
     
     @IBOutlet var mapView: MKMapView!
@@ -22,32 +23,87 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        loadViewFunctions()
+        
+        
+    }
+    
+    func loadViewFunctions() {
+        
+        appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
         mapView.delegate = self
-        getStudentLocationsFromUdacity()
+        
+        loadStudentDetails()
         
         locationManager.delegate = self
         
         if CLLocationManager.authorizationStatus() == .notDetermined {
+            
             self.locationManager.requestWhenInUseAuthorization()
+            
         }
+        
+        
         
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
-        
-    }
-
-    @IBAction func findMeButton(_ sender: Any) {
-        mapView.showsUserLocation = true
-        mapView.setUserTrackingMode(.follow, animated: true)
-    }
-
-    @IBAction func postMe(_ sender: Any) {
-        postNewStudentToUdacity()
-
     }
     
+    var appDelegate: AppDelegate!
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        loadViewFunctions()
+        
+        if appDelegate.showSelectedStudentOnMap {
+            
+            print("zooming")
+            
+            zoomInOnCurrentLocation(latitude: appDelegate.selectedStudent[0].latitude as! Double, longitude: appDelegate.selectedStudent[0].longitude as! Double)
+            
+            
+        }
+        
+    }
+    
+
+
+    @IBAction func findMeButton(_ sender: Any) {
+        
+        mapView.showsUserLocation = true
+        
+        mapView.setUserTrackingMode(.follow, animated: true)
+        
+    }
+    
+    func loadStudentDetails() {
+        
+        OTMNetworkingClient.sharedInstance().loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
+            
+            if result == nil {
+                
+                self.addStudentsToMap(arrayOfStudents: Students.sharedInstance().arrayOfStudents)
+                
+            } else {
+                
+                self.showAlert(message: result!)
+            }
+            
+        })
+        
+    }
+    
+
     func addStudentsToMap(arrayOfStudents: [StudentDetails]) {
+        
+        let allAnnotations = self.mapView.annotations
+        
+        self.mapView.removeAnnotations(allAnnotations)
+        
+        let arrayOfStudents = Students.sharedInstance().arrayOfStudents
         
         for student in arrayOfStudents {
             
@@ -72,87 +128,62 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         
         self.mapView.reloadInputViews()
         
-    }
-    
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard !(annotation is MKUserLocation) else { return nil }
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Annotation") as? MKPinAnnotationView
-        if annotationView == nil {
-            let image = #imageLiteral(resourceName: "Arrow")
-            let button = UIButton(type: .custom)
-            button.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-            button.setImage(image, for: .normal)
-            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "Annotation")
-            annotationView?.canShowCallout = true
-            annotationView?.rightCalloutAccessoryView = button
-        } else {
-            annotationView?.annotation = annotation
-        }
+        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        LoadingOverlay.shared.hideOverlayView()
         
-        return annotationView
     }
-    
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        
-        if control == view.rightCalloutAccessoryView {
-            print("Disclosure Pressed! \(view.annotation?.subtitle)")
-            let url = ((view.annotation?.subtitle)!)! as String
-            UIApplication.shared.open(URL(string: url)!)
-            
-        }
-    }
-    
-    
-    
 
     
-    func getUserDataFromUdacity() {
+    func zoomInOnCurrentLocation(latitude: Double, longitude: Double) {
         
-        let request = NSMutableURLRequest(url: NSURL(string: "https://www.udacity.com/api/users/3903878747")! as URL)
+        let userCoordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let longitudeDeltaDegrees : CLLocationDegrees = 0.03
+        let latitudeDeltaDegrees : CLLocationDegrees = 0.03
+        let userSpan = MKCoordinateSpanMake(latitudeDeltaDegrees, longitudeDeltaDegrees)
+        let userRegion = MKCoordinateRegionMake(userCoordinate, userSpan)
         
-        let session = URLSession.shared
-        
-        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
-            
-            if error != nil {
-                
-                print(error!)
-                
-            } else {
-                
-                let httpResponse = response as? HTTPURLResponse
-                
-                print(httpResponse!)
-            }
-            
-            guard data != nil else {
-                
-                print("Error: did not receive data")
-                
-                return
-            }
-            
-            guard let newData = data!.subdata(in: Range(uncheckedBounds: (lower: data!.startIndex.advanced(by: 5), upper: data!.endIndex))) as Data? else {
-                
-                print("Error: invalid range in data")
-                
-                return
-            }
-            
-            guard let results = try? JSONSerialization.jsonObject(with: newData, options: .allowFragments) as AnyObject? else {
-                
-                print("Error: could not serialize data")
-                
-                return
-            }
-            
-            print(results!)
-            
-        })
-        
-        dataTask.resume()
+        mapView?.setRegion(userRegion, animated: true)
     }
     
+
+    @IBAction func logoutUserButtonClicked(_ sender: Any) {
+        
+        logOutUser()
+        
+    }
+    
+    private func logOutUser() {
+            
+        if isInternetAvailable() {
+            
+            OTMNetworkingClient.sharedInstance().taskForLogout({response, error in
+                
+                if error != nil {
+                    
+                    print(error!)
+                    
+                    return
+                }
+                
+            })
+            
+            self.dismiss(animated: true, completion: nil)
+            
+            
+        } else {
+            
+            self.showAlert(message: "Could not log you out. Please try again later.")
+            
+        }
+
+    }
+
+    
+    @IBAction func reloadButtonClicked(_ sender: Any) {
+        
+        loadStudentDetails()
+        
+    }
     
 }
 
