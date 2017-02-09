@@ -26,8 +26,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         usernameField.delegate = self
         passwordField.delegate = self
         submitButton.isEnabled = true
-        usernameField.text = "jasonpaulsouthwell@me.com"
-        passwordField.text = "L0vef00l"
         submitButton.layer.cornerRadius = 15
         submitButton.clipsToBounds = true
 
