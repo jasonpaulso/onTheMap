@@ -12,7 +12,10 @@ import CoreLocation
 
 class AddNewStudentMapViewController: UIViewController {
     
-    let student = Students.sharedInstance().currentUserStudent
+    let studentsSharedInstance = Students.shared
+    let student = Students.shared.currentUserStudent
+    
+    var client = OTMNetworkingClient.shared
     
     var studentSelectedCurrentLocation = false
     var userLatitude: Double?
@@ -44,7 +47,7 @@ class AddNewStudentMapViewController: UIViewController {
         
         if studentSelectedCurrentLocation {
             
-            location.getAdress { result in
+            location.getAddress { result in
                 
                 if let city = result["City"] as? String {
                     if let state = result["State"] as? String {
@@ -59,40 +62,29 @@ class AddNewStudentMapViewController: UIViewController {
             userLongitude = locationManager.location?.coordinate.longitude
             userLatitude = locationManager.location?.coordinate.latitude
             
-            let coordinates = [userLatitude, userLongitude]
-            let lastName = (student!.lastName!) as String
-            let firstName = (student?.firstName!)!  as String
-            let subTitle = userWebsiteTextField
-            let title = "\(firstName) \(lastName)"
-            let studentAnnotation = StudentAnnotation(coordinate: CLLocationCoordinate2D(latitude: coordinates[0]! , longitude: coordinates[1]! ))
-            
-            studentAnnotation.title = title
-            studentAnnotation.subtitle = subTitle
-            
-            self.mapView.addAnnotation(studentAnnotation)
+            buildAnnotateAndZoomOnMap(student: student!)
             
             mapView.showsUserLocation = true
             mapView.setUserTrackingMode(.follow, animated: true)
-            self.zoomInOnCurrentLocation(latitude: userLatitude!, longitude: userLongitude!)
             
         } else if userLatitude != nil && userLongitude != nil {
             
-            let coordinates = [userLatitude, userLongitude]
-            let lastName = (student?.lastName!)! as String
-            let firstName = (student?.firstName!)!  as String
-            let subTitle = userWebsiteTextField
-            let title = "\(firstName) \(lastName)"
-            let studentAnnotation = StudentAnnotation(coordinate: CLLocationCoordinate2D(latitude: coordinates[0]! , longitude: coordinates[1]! ))
-            
-            studentAnnotation.title = title
-            studentAnnotation.subtitle = subTitle
-            
-            self.mapView.addAnnotation(studentAnnotation)
-            self.zoomInOnCurrentLocation(latitude: userLatitude!, longitude: userLongitude!)
+            buildAnnotateAndZoomOnMap(student: student!)
             
         }
        
+    }
+    
+    
+    func buildAnnotateAndZoomOnMap(student: StudentDetails) {
         
+        let studentAnnotation = studentsSharedInstance.buildAnnotation(studentDetails: student, longitude: userLatitude , latitude: userLongitude)
+        
+        self.mapView.addAnnotation(studentAnnotation)
+        
+        let region = self.buildCurrentLocation(latitude: userLatitude!, longitude: userLongitude!)
+        
+        self.mapView.setRegion(region, animated: true)
     }
 
     @IBAction func dissmissButton(_ sender: Any) {
@@ -103,9 +95,9 @@ class AddNewStudentMapViewController: UIViewController {
   
     @IBAction func submitButton(_ sender: Any) {
         
-        let firstName = (Students.sharedInstance().currentUserStudent?.firstName)! as String
-        let lastname = (Students.sharedInstance().currentUserStudent?.lastName)! as String
-        let uniqueKey = (Students.sharedInstance().currentUserStudent?.key)! as! String
+        let firstName = (student?.firstName)! as String
+        let lastname = (student?.lastName)! as String
+        let uniqueKey = (student?.key)! as! String
         
         let parameters = [
             "uniqueKey": uniqueKey,
@@ -117,7 +109,7 @@ class AddNewStudentMapViewController: UIViewController {
             "longitude": userLongitude!
             ] as [String:Any]
         
-        OTMNetworkingClient.sharedInstance().taskForDetailsPost(parameters, completionHandlerForDetailsPost: { (response, error) in
+        client.taskForDetailsPost(parameters, completionHandlerForDetailsPost: { (response, error) in
             
             if error == nil {
 
@@ -167,22 +159,15 @@ class AddNewStudentMapViewController: UIViewController {
         
     }
     
-    func zoomInOnCurrentLocation(latitude: Double, longitude: Double) {
-        
-        let userCoordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        let longitudeDeltaDegrees : CLLocationDegrees = 0.03
-        let latitudeDeltaDegrees : CLLocationDegrees = 0.03
-        let userSpan = MKCoordinateSpanMake(latitudeDeltaDegrees, longitudeDeltaDegrees)
-        let userRegion = MKCoordinateRegionMake(userCoordinate, userSpan)
-        
-        mapView?.setRegion(userRegion, animated: true)
-    }
+
+    
+    
 
     override func viewWillAppear(_ animated: Bool) {
         
-        let yourAnnotationAtIndex = 0
+        let annotationIndex = 0
         
-        mapView.selectAnnotation(mapView.annotations[yourAnnotationAtIndex], animated: true)
+        mapView.selectAnnotation(mapView.annotations[annotationIndex], animated: true)
     }
 
 }

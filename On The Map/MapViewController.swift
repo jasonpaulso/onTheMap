@@ -13,11 +13,13 @@ import SystemConfiguration
 
 class MapViewController: UIViewController {
     
+    var client = OTMNetworkingClient.shared
+    
     
     @IBOutlet var findMeButton: UIBarButtonItem!
     
     var locationManager = CLLocationManager()
-    var students = Students.sharedInstance()
+    var students = Students.shared
     
     @IBOutlet var mapView: MKMapView!
     
@@ -71,8 +73,12 @@ class MapViewController: UIViewController {
             
             print("zooming")
             
-            zoomInOnCurrentLocation(latitude: appDelegate.selectedStudent[0].latitude as! Double, longitude: appDelegate.selectedStudent[0].longitude as! Double)
+            let region = buildCurrentLocation(
+                latitude: appDelegate.selectedStudent[0].latitude as! Double,
+                longitude: appDelegate.selectedStudent[0].longitude as! Double
+            )
             
+            self.mapView.setRegion(region, animated: true)
             
         }
         
@@ -117,11 +123,11 @@ class MapViewController: UIViewController {
     
     func loadStudentDetails() {
         
-        OTMNetworkingClient.sharedInstance().loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
+        client.loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
             
             if result == nil {
                 
-                self.addStudentsToMap(arrayOfStudents: Students.sharedInstance().arrayOfStudents)
+                self.addStudentsToMap(arrayOfStudents: self.students.arrayOfStudents)
                 
             } else {
                 
@@ -139,7 +145,7 @@ class MapViewController: UIViewController {
         
         self.mapView.removeAnnotations(allAnnotations)
         
-        let arrayOfStudents = Students.sharedInstance().arrayOfStudents
+        let arrayOfStudents = students.arrayOfStudents
         
         for student in arrayOfStudents {
             
@@ -147,17 +153,8 @@ class MapViewController: UIViewController {
             
             if student.latitude != nil && student.longitude != nil {
 
+                let studentAnnotation = Students.shared.buildAnnotation(studentDetails: student, longitude: nil, latitude: nil)
                 
-                let coordinates = [student.latitude as? Double, student.longitude as? Double]
-                let lastName = student.lastName!
-                let firstName = student.firstName!
-                let subTitle = student.url!
-                let title = "\(firstName) \(lastName)"
-                
-                let studentAnnotation = StudentAnnotation(coordinate: CLLocationCoordinate2D(latitude: coordinates[0]! , longitude: coordinates[1]! ))
-                studentAnnotation.title = title
-                studentAnnotation.subtitle = subTitle
-
                 self.mapView.addAnnotation(studentAnnotation)
                 
             }
@@ -170,18 +167,6 @@ class MapViewController: UIViewController {
         
     }
 
-    
-    func zoomInOnCurrentLocation(latitude: Double, longitude: Double) {
-        
-        let userCoordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        let longitudeDeltaDegrees : CLLocationDegrees = 0.03
-        let latitudeDeltaDegrees : CLLocationDegrees = 0.03
-        let userSpan = MKCoordinateSpanMake(latitudeDeltaDegrees, longitudeDeltaDegrees)
-        let userRegion = MKCoordinateRegionMake(userCoordinate, userSpan)
-        
-        mapView?.setRegion(userRegion, animated: true)
-    }
-    
 
     @IBAction func logoutUserButtonClicked(_ sender: Any) {
         
@@ -193,7 +178,7 @@ class MapViewController: UIViewController {
             
         if isInternetAvailable() {
             
-            OTMNetworkingClient.sharedInstance().taskForLogout({response, error in
+            client.taskForLogout({response, error in
                 
                 if error != nil {
                     

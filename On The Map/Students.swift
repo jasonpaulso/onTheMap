@@ -18,26 +18,51 @@ class Students : NSObject {
     var showCurrentStudentOnMap = false
     var selectedStudentCoordinates: (Double, Double)?
     
-    class func sharedInstance() -> Students {
-        struct Singleton {
-            static var sharedInstance = Students()
+    class var shared: Students {
+        
+        struct Static {
+            
+            static let instance: Students = Students()
+            
         }
-        return Singleton.sharedInstance
+        
+        return Static.instance
     }
+    
+    func buildAnnotation(studentDetails: StudentDetails, longitude: Double?, latitude: Double?) -> MKAnnotation {
+        
+        let coordinates = [studentDetails.latitude as? Double, studentDetails.longitude as? Double]
+        let lastName = studentDetails.lastName!
+        let firstName = studentDetails.firstName!
+        let subTitle = studentDetails.url!
+        let title = "\(firstName) \(lastName)"
+        let latitude = latitude ?? coordinates[0]
+        let longitude = longitude ?? coordinates[1]
+        
+        let studentAnnotation = StudentAnnotation(coordinate: CLLocationCoordinate2D(latitude: latitude! , longitude: longitude! ))
+        studentAnnotation.title = title
+        studentAnnotation.subtitle = subTitle
+        
+        return studentAnnotation
+        
+    }
+    
+    
 }
 
 struct StudentDetails {
     
-    let firstName: String?
-    let lastName: String?
-    let latitude: Any?
-    let longitude: Any?
-    let mapTitle: String?
-    let url: String?
-    let key: Any?
+    var firstName: String?
+    var lastName: String?
+    var latitude: Any?
+    var longitude: Any?
+    var mapTitle: String?
+    var url: String?
+    var key: Any?
     
     
-    init(dictionary: [String:AnyObject]) {
+    
+    init(dictionary: [String:AnyObject], studentsArray: inout [StudentDetails]) {
         
         self.firstName = dictionary["firstName"] as? String ?? "Unknown"
         self.lastName = dictionary["lastName"] as? String  ?? "Unknown"
@@ -47,12 +72,12 @@ struct StudentDetails {
         self.url = dictionary["mediaURL"] as? String  ?? "Unknown"
         self.key = dictionary["uniqueKey"] 
         
-        Students.sharedInstance().arrayOfStudents.append(self)
+        studentsArray.append(self)
         
     }
+
     
 }
-
 
 class StudentAnnotation: NSObject, MKAnnotation {
     
@@ -64,6 +89,8 @@ class StudentAnnotation: NSObject, MKAnnotation {
         self.coordinate = coordinate
     }
 }
+
+
 
 
 

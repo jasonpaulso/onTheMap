@@ -48,6 +48,17 @@ extension UIViewController : MKMapViewDelegate, CLLocationManagerDelegate, UIGes
         }
     }
     
+    func buildCurrentLocation(latitude: Double, longitude: Double) -> MKCoordinateRegion {
+        
+        let userCoordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let longitudeDeltaDegrees : CLLocationDegrees = 0.03
+        let latitudeDeltaDegrees : CLLocationDegrees = 0.03
+        let userSpan = MKCoordinateSpanMake(latitudeDeltaDegrees, longitudeDeltaDegrees)
+        let userRegion = MKCoordinateRegionMake(userCoordinate, userSpan)
+        
+        return userRegion
+    }
+    
     
     
 }

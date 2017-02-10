@@ -10,14 +10,18 @@ import UIKit
 
 class StudentTableTableViewController: UITableViewController {
     
-    var collectionOfStudents = [StudentDetails]()
+    var client = OTMNetworkingClient.shared
+    
+//    var collectionOfStudents = [StudentDetails]()
+    
+    var studentsSharedInstance = Students.shared
     
 
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
-        collectionOfStudents = Students.sharedInstance().arrayOfStudents
+//        collectionOfStudents = studentsSharedInstance.arrayOfStudents
 
     }
 
@@ -27,14 +31,14 @@ class StudentTableTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return collectionOfStudents.count
+        return studentsSharedInstance.arrayOfStudents.count
         
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let student = collectionOfStudents[(indexPath as NSIndexPath).row]
+        let student = studentsSharedInstance.arrayOfStudents[(indexPath as NSIndexPath).row]
         let firstName = student.firstName!
         let lastName = student.lastName!
         let title = "\(firstName) \(lastName)"
@@ -78,7 +82,7 @@ class StudentTableTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let student = collectionOfStudents[(indexPath as NSIndexPath).row]
+        let student = studentsSharedInstance.arrayOfStudents[(indexPath as NSIndexPath).row]
         
         let url = student.url!
         
@@ -104,7 +108,7 @@ class StudentTableTableViewController: UITableViewController {
         appDelegate.selectedStudentCoordinates = (latitude!, longitude!)
         appDelegate.showSelectedStudentOnMap = true
 
-        print("tab bar selected?", Students.sharedInstance().showCurrentStudentOnMap)
+        print("tab bar selected?", Students.shared.showCurrentStudentOnMap)
         
         tabBarController?.selectedIndex = 0
         
@@ -119,7 +123,7 @@ class StudentTableTableViewController: UITableViewController {
         
         if isInternetAvailable() {
             
-            OTMNetworkingClient.sharedInstance().taskForLogout({response, error in
+            client.taskForLogout({response, error in
                 
                 if error != nil {
                     
@@ -142,7 +146,7 @@ class StudentTableTableViewController: UITableViewController {
     
     func loadStudentDetails() {
         
-        OTMNetworkingClient.sharedInstance().loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
+        client.loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
             
             if result == nil {
                 

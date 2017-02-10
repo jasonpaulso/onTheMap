@@ -11,10 +11,13 @@ import UIKit
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
     
+    
     @IBOutlet var submitButton: UIButton!
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
     
+    var client = OTMNetworkingClient.shared
+    var students = Students.shared
     
      // Mark: Develeopment Credentials
     
@@ -55,6 +58,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             
             print("invalid email address")
             self.showAlert(title: "Alert", message: "Email address is not valid", buttonText: "OK")
+            
 
         } else if !isUserPasswordValid {
             
@@ -62,6 +66,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             self.showAlert(title: "Alert", message: "Please enter a password", buttonText: "OK")
             
         }
+        
+        
         
     }
     
@@ -71,7 +77,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
-        let _ = OTMNetworkingClient.sharedInstance().taskForLogin(usernameField.text!, password: passwordField.text!, completionHandlerForLogin: { (response, error) in
+        let _ = client.taskForLogin(usernameField.text!, password: passwordField.text!, completionHandlerForLogin: { (response, error) in
             
             if error == nil {
                 
@@ -82,7 +88,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         performUIUpdatesOnMain {
                             
                             self.showAlert(title: "Alert", message: (response?["error"] as! String), buttonText: "Dismiss")
-                            
+                            LoadingOverlay.shared.hideOverlayView()
                         }
                         
                         return
@@ -91,12 +97,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     guard let accountData = response?["account"] as! [String:Any]? else {
                         
                         print("could not parse account details")
+                       
                         return
                     }
                     
                     guard let accountKey = accountData["key"] as! String? else {
                         
                         print("could not parse unique key from account details")
+                   
                         return
 
                     }
@@ -105,6 +113,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     guard let sessionData = response?["session"] as? [String: AnyObject] else {
                         
                         print("Error: could not parse data")
+                      
                         print(response!)
                         return
                     }
@@ -112,12 +121,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     guard sessionData["id"] as? String != nil else {
                         
                         self.showAlert(title: "Alert", message: "There was a problem logging you in. Please try again.", buttonText: "OK")
+                       
                         return
                     }
                     
-                    Students.sharedInstance().currentUserStudentKey = accountKey
+                    self.students.currentUserStudentKey = accountKey
                     
-                    self.getCurrentUserDetails(accountKey: Students.sharedInstance().currentUserStudentKey!)
+                    self.getCurrentUserDetails(accountKey: self.students.currentUserStudentKey!)
                     let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TabBarController")
             
                     LoadingOverlay.shared.hideOverlayView()
@@ -136,6 +146,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                     print(error as Any)
                     
+                    LoadingOverlay.shared.hideOverlayView()
+                    
                 }
                 
             }
@@ -146,7 +158,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     func getCurrentUserDetails(accountKey: String) {
         
-        OTMNetworkingClient.sharedInstance().taskForGetCurrentUserDataFromUdacity(completionHandlerForUserDataFromUdacity: {response, error in
+        client.taskForGetCurrentUserDataFromUdacity(completionHandlerForUserDataFromUdacity: {response, error in
             
             if error == nil {
                 
@@ -154,7 +166,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                     let currentStudent = currentStudentResult[0]
                     
-                    Students.sharedInstance().currentUserStudent = StudentDetails.init(dictionary: currentStudent as [String : AnyObject])
+                    var studentArray = [StudentDetails]()
+                    
+                    self.students.currentUserStudent = StudentDetails.init(dictionary: currentStudent as [String : AnyObject], studentsArray: &studentArray)
                     
                     return
                     

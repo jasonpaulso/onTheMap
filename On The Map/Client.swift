@@ -11,7 +11,9 @@ import UIKit
 
 class OTMNetworkingClient: NSObject {
     
-    let studentSharedInstance = Students.sharedInstance()
+    
+//    var students = Students.sharedInstance().arrayOfStudents
+    let studentSharedInstance = Students.shared
 
     func taskForLogin(_ userName: String, password: String, completionHandlerForLogin: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) {
         
@@ -365,12 +367,12 @@ class OTMNetworkingClient: NSObject {
     
     func loadStudentDetails(completionHandlerForLoadStudentDetails: @escaping (_ result: String?, _ error: NSError?) -> Void) {
         
-        Students.sharedInstance().arrayOfStudents.removeAll()
+        studentSharedInstance.arrayOfStudents.removeAll()
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         LoadingOverlay.shared.showOverlay()
         
-        OTMNetworkingClient.sharedInstance().getStudentLocationsFromUdacity(completionHandlerForGetLocations: { (response, error) -> Void in
+        self.getStudentLocationsFromUdacity(completionHandlerForGetLocations: { (response, error) -> Void in
             
             if response == nil {
                 return
@@ -386,7 +388,7 @@ class OTMNetworkingClient: NSObject {
                     
                     if student["firstName"] != nil {
                         
-                        _ = StudentDetails.init(dictionary: student)
+                        _ = StudentDetails.init(dictionary: student, studentsArray: &self.studentSharedInstance.arrayOfStudents)
                         
                     }
                 }
@@ -436,18 +438,18 @@ class OTMNetworkingClient: NSObject {
         completionHandlerForConvertData(sessionData, nil)
     }
     
-    
-    class func sharedInstance() -> OTMNetworkingClient {
+    class var shared: OTMNetworkingClient {
         
-        struct Singleton {
+        struct Static {
             
-            static var sharedInstance = OTMNetworkingClient()
+            static let instance: OTMNetworkingClient = OTMNetworkingClient()
             
         }
         
-        return Singleton.sharedInstance
+        return Static.instance
     }
+
     
-    
+
     
 }

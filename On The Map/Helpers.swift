@@ -57,7 +57,7 @@ class GetLocation {
     let locManager = CLLocationManager()
     var currentLocation: CLLocation!
     
-    func getAdress(completion: @escaping (Typealiases.JSONDict) -> ()) {
+    func getAddress(completion: @escaping (Typealiases.JSONDict) -> ()) {
         
         locManager.requestWhenInUseAuthorization()
         if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse ||
