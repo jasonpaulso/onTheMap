@@ -244,9 +244,15 @@ class OTMNetworkingClient: NSObject {
             "X-Parse-REST-API-Key": "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
         ]
         
+        let parameters = [
+            "order" : "ascending"
+        ]
+        
         let request = NSMutableURLRequest(url: NSURL(string: "https://parse.udacity.com/parse/classes/StudentLocation?limit=100")! as URL)
         
         request.allHTTPHeaderFields = headers
+        
+        request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         
         let session = URLSession.shared
         

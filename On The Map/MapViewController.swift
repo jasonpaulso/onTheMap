@@ -125,6 +125,8 @@ class MapViewController: UIViewController {
         
         client.loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
             
+            
+            
             if result == nil {
                 
                 self.addStudentsToMap(arrayOfStudents: self.students.arrayOfStudents)
@@ -134,6 +136,7 @@ class MapViewController: UIViewController {
                 self.showAlert(message: result!)
             }
             
+            LoadingOverlay.shared.hideOverlayView()
         })
         
     }

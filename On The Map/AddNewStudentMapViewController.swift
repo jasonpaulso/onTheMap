@@ -15,6 +15,9 @@ class AddNewStudentMapViewController: UIViewController {
     let studentsSharedInstance = Students.shared
     let student = Students.shared.currentUserStudent
     
+    var addStudentPresentingViewController: UIViewController!
+    
+    
     var client = OTMNetworkingClient.shared
     
     var studentSelectedCurrentLocation = false
@@ -31,11 +34,18 @@ class AddNewStudentMapViewController: UIViewController {
      
     override func viewDidLoad() {
         
+        
         submitButton.layer.cornerRadius = 15
         submitButton.clipsToBounds = true
         super.viewDidLoad()
         mapView.delegate = self
         locationManager.delegate = self
+        
+        viewLoadFunctions()
+       
+    }
+    
+    func viewLoadFunctions() {
         
         if CLLocationManager.authorizationStatus() == .notDetermined {
             self.locationManager.requestWhenInUseAuthorization()
@@ -55,37 +65,52 @@ class AddNewStudentMapViewController: UIViewController {
                     } else {
                         self.userLocationString = "\(city)"
                     }
-                  
+                    
                 }
             }
-            
             userLongitude = locationManager.location?.coordinate.longitude
             userLatitude = locationManager.location?.coordinate.latitude
             
-            buildAnnotateAndZoomOnMap(student: student!)
-            
             mapView.showsUserLocation = true
             mapView.setUserTrackingMode(.follow, animated: true)
+            
+            buildAnnotateAndZoomOnMap(student: student!)
             
         } else if userLatitude != nil && userLongitude != nil {
             
             buildAnnotateAndZoomOnMap(student: student!)
             
+            
         }
-       
+        
     }
-    
     
     func buildAnnotateAndZoomOnMap(student: StudentDetails) {
         
-        let studentAnnotation = studentsSharedInstance.buildAnnotation(studentDetails: student, longitude: userLatitude , latitude: userLongitude)
-        
+        let studentAnnotation = studentsSharedInstance.buildAnnotation(studentDetails: student, longitude: userLongitude, latitude: userLatitude)
+
         self.mapView.addAnnotation(studentAnnotation)
         
-        let region = self.buildCurrentLocation(latitude: userLatitude!, longitude: userLongitude!)
+        let region = buildCurrentLocation(latitude: userLatitude!, longitude: userLongitude!)
         
-        self.mapView.setRegion(region, animated: true)
+        mapView?.setRegion(region, animated: true)
+
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        let annotationIndex = 0
+        
+        mapView.selectAnnotation(mapView.annotations[annotationIndex], animated: true)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        addStudentPresentingViewController = self.presentingViewController
+        
+        print(addStudentPresentingViewController)
+    }
+
 
     @IBAction func dissmissButton(_ sender: Any) {
         
@@ -94,7 +119,7 @@ class AddNewStudentMapViewController: UIViewController {
     }
   
     @IBAction func submitButton(_ sender: Any) {
-        
+        LoadingOverlay.shared.showOverlay()
         let firstName = (student?.firstName)! as String
         let lastname = (student?.lastName)! as String
         let uniqueKey = (student?.key)! as! String
@@ -108,8 +133,9 @@ class AddNewStudentMapViewController: UIViewController {
             "latitude": userLatitude!,
             "longitude": userLongitude!
             ] as [String:Any]
-        
+
         client.taskForDetailsPost(parameters, completionHandlerForDetailsPost: { (response, error) in
+            LoadingOverlay.shared.hideOverlayView()
             
             if error == nil {
 
@@ -133,7 +159,10 @@ class AddNewStudentMapViewController: UIViewController {
                         return
                     }
                     
-                    self.reloadStudentsMapView()
+                    self.dismiss(animated: true) {
+                        // go back to MainMenuView as the eyes of the user
+                        self.addStudentPresentingViewController?.dismiss(animated: false, completion: nil)
+                    }
                 }
                 
             } else {
@@ -150,24 +179,6 @@ class AddNewStudentMapViewController: UIViewController {
         })
     }
     
-    
-    func reloadStudentsMapView() {
-        
-        let tabViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TabBarController")
-        
-        self.present(tabViewController, animated: true, completion: nil)
-        
-    }
-    
 
-    
-    
-
-    override func viewWillAppear(_ animated: Bool) {
-        
-        let annotationIndex = 0
-        
-        mapView.selectAnnotation(mapView.annotations[annotationIndex], animated: true)
-    }
 
 }

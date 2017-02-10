@@ -12,6 +12,8 @@ import CoreLocation
 
 class AddStudentViewController: UIViewController, UITextFieldDelegate {
     
+
+    
     var locationManager = CLLocationManager()
     let geocoder = CLGeocoder()
 
@@ -58,6 +60,7 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
 
     @IBAction func findUserByCurrentLocation(_ sender: Any) {
         
+        LoadingOverlay.shared.showOverlay()
         
         var locationAvailable: Bool?
         
@@ -77,9 +80,14 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
             
             if didValidateTextEntry(webSiteString: userWebsiteTextField.text!, locationString: "auto") {
                 
+                LoadingOverlay.shared.hideOverlayView()
+                
                 self.loadMapView(longitude: nil, latitude: nil, websiteString: userWebSite!, mapString: nil, findLocation: true)
                 
+                
             } else {
+                
+                LoadingOverlay.shared.hideOverlayView()
                 
                 self.showAlert(title: "Alert", message: "Website address is not valid", buttonText: "OK")
                 
@@ -87,6 +95,8 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
             }
             
         } else {
+            
+            LoadingOverlay.shared.hideOverlayView()
             
             self.showAlert(message: "Your location is currently unavailable. Please search by input or try again later.")
             
@@ -100,6 +110,8 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func findUserByInput(_ sender: Any) {
         
+        LoadingOverlay.shared.hideOverlayView()
+        
         let addressString = userLocationTextField.text!
         
         if didValidateTextEntry(webSiteString: userWebSiteTextFieldAlt.text!, locationString: addressString) {
@@ -109,6 +121,7 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
                 guard error == nil else {
                     
                     print(error!)
+                    LoadingOverlay.shared.hideOverlayView()
                     
                     self.showAlert(message: "Could not find this location. Please try something else.")
                     
@@ -117,6 +130,8 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
                 
                 guard let location = placemarks?[0] else {
                     
+                    LoadingOverlay.shared.hideOverlayView()
+                    
                     self.showAlert(message: "Could not find this location. Please try something else.")
                     
                     return
@@ -124,6 +139,8 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
                 
                 let longitude = (location.location?.coordinate.longitude)! as Double?
                 let latitude = (location.location?.coordinate.latitude)! as Double?
+                
+                LoadingOverlay.shared.hideOverlayView()
                 
                 self.loadMapView(longitude: longitude, latitude: latitude, websiteString: self.userWebSite, mapString: addressString)
                     
