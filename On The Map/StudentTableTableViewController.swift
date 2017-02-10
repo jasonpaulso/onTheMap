@@ -12,6 +12,8 @@ class StudentTableTableViewController: UITableViewController {
     
     var client = OTMNetworkingClient.shared
     
+   
+    
 //    var collectionOfStudents = [StudentDetails]()
     
     var studentsSharedInstance = Students.shared
@@ -38,7 +40,7 @@ class StudentTableTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let student = studentsSharedInstance.arrayOfStudents[(indexPath as NSIndexPath).row]
+        let student = Students.shared.arrayOfStudents[(indexPath as NSIndexPath).row]
         let firstName = student.firstName!
         let lastName = student.lastName!
         let title = "\(firstName) \(lastName)"
@@ -144,14 +146,16 @@ class StudentTableTableViewController: UITableViewController {
         }
     }
     
+    @IBOutlet var myTableView: UITableView!
+    
     func loadStudentDetails() {
         
-        client.loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
+        client.loadStudentDetails(order: 0, completionHandlerForLoadStudentDetails: {result, _ in
             
             if result == nil {
                 
-                self.view.reloadInputViews()
-
+                self.studentTableView.reloadData()
+                
                 
             } else {
                 
@@ -169,6 +173,29 @@ class StudentTableTableViewController: UITableViewController {
         
     }
     
+
+    @IBOutlet var studentTableView: UITableView!
+
+
+
+    @IBAction func downButton(_ sender: Any) {
+        client.loadStudentDetails(order: 0) { (result, error) in
+            
+            //            self.loadStudentDetails()
+            self.studentTableView.reloadData()
+            LoadingOverlay.shared.hideOverlayView()
+        }
+    }
+    
+    @IBAction func upButton(_ sender: Any) {
+        client.loadStudentDetails(order: 1) { (result, error) in
+            
+            //            self.loadStudentDetails()
+            self.studentTableView.reloadData()
+            LoadingOverlay.shared.hideOverlayView()
+        }
+
+    }
     
     @IBAction func refreshButtonClicked(_ sender: Any) {
         

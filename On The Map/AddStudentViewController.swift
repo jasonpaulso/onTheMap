@@ -74,8 +74,6 @@ class AddStudentViewController: UIViewController, UITextFieldDelegate {
             
         }
         
-         print("Available?", locationAvailable!)
-        
         if locationAvailable! {
             
             if didValidateTextEntry(webSiteString: userWebsiteTextField.text!, locationString: "auto") {

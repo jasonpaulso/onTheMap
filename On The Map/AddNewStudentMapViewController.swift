@@ -108,7 +108,6 @@ class AddNewStudentMapViewController: UIViewController {
         
         addStudentPresentingViewController = self.presentingViewController
         
-        print(addStudentPresentingViewController)
     }
 
 

@@ -123,7 +123,7 @@ class MapViewController: UIViewController {
     
     func loadStudentDetails() {
         
-        client.loadStudentDetails(completionHandlerForLoadStudentDetails: {result, _ in
+        client.loadStudentDetails(order: 0, completionHandlerForLoadStudentDetails: {result, _ in
             
             
             
@@ -152,7 +152,7 @@ class MapViewController: UIViewController {
         
         for student in arrayOfStudents {
             
-            print(student)
+//            print(student)
             
             if student.latitude != nil && student.longitude != nil {
 

@@ -438,10 +438,22 @@
                                     <action selector="refreshButtonClicked:" destination="WPS-i9-t2T" id="tcv-aY-YkJ"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem image="up-tiny" id="N8l-3z-NJz">
+                                <connections>
+                                    <action selector="downButton:" destination="WPS-i9-t2T" id="HE7-fZ-2dh"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="down-tiny" id="S7I-X8-eBW">
+                                <connections>
+                                    <action selector="upButton:" destination="WPS-i9-t2T" id="geb-ph-Pja"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="studentTableView" destination="Ysk-dX-sJk" id="29o-oa-B4M"/>
+                        <outlet property="tableView" destination="Ysk-dX-sJk" id="N4H-hA-Z7s"/>
                         <segue destination="BYZ-38-t0r" kind="presentation" identifier="logOutSegue" id="XeN-c1-SDY"/>
                     </connections>
                 </tableViewController>
@@ -509,14 +521,16 @@
     </scenes>
     <resources>
         <image name="Arrow" width="50" height="50"/>
+        <image name="down-tiny" width="32" height="32"/>
         <image name="list-1" width="32" height="32"/>
         <image name="pin" width="60" height="60"/>
         <image name="pin-small" width="40" height="40"/>
         <image name="red-pin" width="128" height="128"/>
         <image name="udacity" width="256" height="256"/>
+        <image name="up-tiny" width="32" height="32"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hdd-pd-3OT"/>
-        <segue reference="kMW-Ha-c2S"/>
+        <segue reference="XeN-c1-SDY"/>
+        <segue reference="KzH-dm-vvm"/>
     </inferredMetricsTieBreakers>
 </document>

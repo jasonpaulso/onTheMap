@@ -237,22 +237,35 @@ class OTMNetworkingClient: NSObject {
     }
 
         
-    func getStudentLocationsFromUdacity(completionHandlerForGetLocations: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) {
+    func getStudentLocationsFromUdacity(order: Int, completionHandlerForGetLocations: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) {
         
         let headers = [
             "X-Parse-Application-Id": "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr",
             "X-Parse-REST-API-Key": "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
         ]
         
-        let parameters = [
-            "order" : "ascending"
-        ]
+        var string = "https://parse.udacity.com/parse/classes/StudentLocation?"
         
-        let request = NSMutableURLRequest(url: NSURL(string: "https://parse.udacity.com/parse/classes/StudentLocation?limit=100")! as URL)
+        if order == 0 {
+            
+            print("direction down")
+            
+            string += "order=-updatedAt&limit=100"
+        }
+        
+        if order == 1 {
+            
+            print("direction up")
+            
+            string += "order=updatedAt&limit=100"
+        }
+        
+        let request = NSMutableURLRequest(url: NSURL(string: string)! as URL)
         
         request.allHTTPHeaderFields = headers
         
-        request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+        
+        print(request)
         
         let session = URLSession.shared
         
@@ -371,14 +384,14 @@ class OTMNetworkingClient: NSObject {
         
     }
     
-    func loadStudentDetails(completionHandlerForLoadStudentDetails: @escaping (_ result: String?, _ error: NSError?) -> Void) {
+    func loadStudentDetails(order: Int, completionHandlerForLoadStudentDetails: @escaping (_ result: String?, _ error: NSError?) -> Void) {
         
         studentSharedInstance.arrayOfStudents.removeAll()
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         LoadingOverlay.shared.showOverlay()
         
-        self.getStudentLocationsFromUdacity(completionHandlerForGetLocations: { (response, error) -> Void in
+        self.getStudentLocationsFromUdacity(order: order, completionHandlerForGetLocations: { (response, error) -> Void in
             
             if response == nil {
                 return
@@ -389,7 +402,7 @@ class OTMNetworkingClient: NSObject {
             }
             
             if let studentResults = response!["results"] as? [[String:AnyObject]] {
-                
+                print("updating")
                 for student in studentResults {
                     
                     if student["firstName"] != nil {
@@ -430,6 +443,8 @@ class OTMNetworkingClient: NSObject {
         do { let parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
   
             sessionData = parsedResult
+            
+            print(sessionData!)
             
         } catch {
             
