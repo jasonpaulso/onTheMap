@@ -244,23 +244,27 @@ class OTMNetworkingClient: NSObject {
             "X-Parse-REST-API-Key": "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
         ]
         
-        var string = "https://parse.udacity.com/parse/classes/StudentLocation?"
+        var baseURL = "https://parse.udacity.com/parse/classes/StudentLocation?"
         
         if order == 0 {
             
             print("direction down")
             
-            string += "order=-updatedAt&limit=100"
+            baseURL += "order=-updatedAt&limit=100"
         }
         
         if order == 1 {
             
             print("direction up")
             
-            string += "order=updatedAt&limit=100"
+            baseURL += "order=updatedAt&limit=100"
         }
         
-        let request = NSMutableURLRequest(url: NSURL(string: string)! as URL)
+//        let test = "https://parse.udacity.com/parse/classes/StudentLocation"
+//        let downTest = "https://parse.udacity.com/parse/classes/StudentLocation?limit=100&order=-updatedAt"
+//        let upTest = "https://parse.udacity.com/parse/classes/StudentLocation?limit=100&order=updatedAt"
+        
+        let request = NSMutableURLRequest(url: NSURL(string: baseURL)! as URL)
         
         request.allHTTPHeaderFields = headers
         
