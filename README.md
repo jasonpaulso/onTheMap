@@ -6,12 +6,12 @@ On The Map iPhone app for Udacity iOS Developer NanoDegree
 
 1. Make sure you've installed all requirements
 2. Clone this repository:
-  `git clone https://github.com/[username]/[repository]`
+  `git clone https://github.com/jasonpaulso/onTheMap`
 3. Build and run from Xcode on a provisioned device or in the simulator
 
 ## Usage
 
-Here's a short explanation how to use `[repository]`:
+Here's a short explanation how to use `onTheMap`:
 
 * This app allows a Udacity student to view the geographic location of other students and to add their own geographic instance.
 * The app also allows a student to add a link to their prefered website to their annotation.
